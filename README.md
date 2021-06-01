@@ -1,5 +1,5 @@
 # Compiladores-P3
-Implementation of sematics analysis on ALG language
+code generation for alg atributions (task 6)
 
 
 to run this clone this and then do the following after opening the folder P3-SemanticsForALG/ in intelij (press what is underlined):
