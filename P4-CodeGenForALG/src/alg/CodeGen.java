@@ -263,13 +263,14 @@ public class CodeGen extends algBaseVisitor<Symbol>{
     //inst --> left_side EQUAL exp PVIR;
     public Symbol visitAssign(alg.AssignContext ctx)
     {
-        //TODO
-        return null;
+        return visit(ctx.alg_atrib());
     }
 
     public Symbol visitAlg_atrib(alg.Alg_atribContext ctx)
     {
-        //TODO
+        Symbol s1 = visit(ctx.lado_esquerdo());
+        Symbol s2 = visit(ctx.alg_expression());
+        emit(s1.name + " = " + s2.name);
         return null;
     }
 
@@ -277,10 +278,17 @@ public class CodeGen extends algBaseVisitor<Symbol>{
     //left_side --> IDENT
     public Symbol visitLado_esquerdo_ident(alg.Lado_esquerdo_identContext ctx)
     {
-        //TODO
-        return null;
+        return scopes.get(ctx).resolve(ctx.IDENT().getText());
     }
 
+    public  Symbol visitLado_esquerdo_pointer_index(alg.Lado_esquerdo_pointer_indexContext ctx)
+    {
+        Symbol s1 = visit(ctx.alg_expression(0));
+        Symbol s2 = visit(ctx.alg_expression(1));
+        Symbol indexShift = temp(ctx, s2.type);
+        emit(indexShift.name + " = " + s2.name + " * " + s1.width);
+        return new Symbol(s1.type.extractValueType(), s1.name + "[" + indexShift.name + "]");
+    }
 
     //inst --> IF exp THEN inst (ELSE inst)?   #If
     public Symbol visitIf(alg.IfContext ctx)

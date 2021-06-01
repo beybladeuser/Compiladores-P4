@@ -26,6 +26,17 @@ public class Symbol {
         }
         this.type = new Type(isPointer, type);
         this.name = name;
+
+        this.width = this.type.getWidth();
+
+        isValueKnown = false;
+        //by default, we know the size needed to store all pointers, and all primitive types
+        //except for strings, which need to be dynamically allocated
+        if(!this.type.isPointer() && this.type.getPrimitiveType() == Type.PType.STRING)
+        {
+            this.isWidthKnown = false;
+        }
+        else this.isWidthKnown = true;
     }
 
     //usamos um enumerado para guardar o tipo, porque é mais eficiente nas comparações de tipos
