@@ -1,104 +1,58 @@
 package Symbols;
 
-import java.util.Locale;
-
+//classe apenas com campos
 public class Symbol {
-	public enum PType
-	{
-		INT,
-		BOOL,
-		FLOAT,
-		STRING,
-		VOID,
-		INTP,
-		BOOLP,
-		FLOATP,
-		STRINGP,
-		VOIDP,
-		ERROR
-	}
 
-	public PType type;
-	public String name;
-	public Scope scope;
+    public final Type type;
+    public final String name;
+    public int width;
+    public int offset;
+    public Scope scope;
+    public boolean isValueKnown;
+    public boolean isWidthKnown;
+    public Object value;
 
-	public Symbol(String type, String name)
-	{
-		if (type.contains("<")){
-			type = type.replace("<", "");
-			type = type.replace(">", "P");
-		}
-		this.type = PType.valueOf(type.toUpperCase(Locale.ROOT));
-		this.name = name;
-	}
+    //usamos um enumerado para guardar o tipo, porque é mais eficiente nas comparações de tipos
+    public Symbol(Type type, String name)
+    {
+        this.type = type;
+        this.name = name;
+        this.width = type.getWidth();
 
-	public String toString()
-	{
-		return name + ":" + this.getTypeString();
-	}
+        isValueKnown = false;
+        //by default, we know the size needed to store all pointers, and all primitive types
+        //except for strings, which need to be dynamically allocated
+        if(!type.isPointer() && type.getPrimitiveType() == Type.PType.STRING)
+        {
+            this.isWidthKnown = false;
+        }
+        else this.isWidthKnown = true;
 
-	public String getTypeString()
-	{
-		return typeToString(type);
-	}
+        //this.offset = offset;
+    }
 
-	public static String typeToString(PType type)
-	{
-		String result = type.toString();
-		if (!isTypePointer(type))
-			return result;
-		else {
-			result = result.replace("P", ">");
-			return "<" + result;
-		}
-	}
+    public Symbol(Type type, String name, Object value)
+    {
+        this.type = type;
+        this.name = name;
+        this.width = type.getWidth();
+        this.isValueKnown = true;
+        this.isWidthKnown = true;
+        this.value = value;
 
-	public boolean isPointerType(){
-		return isTypePointer(type);
-	}
+        //this.offset = offset;
+    }
 
-	public static boolean isTypePointer(PType type)
-	{
-		return type.toString().contains("P");
-	}
+    /*public Symbol(Type type, String name, int offset)
+    {
+        this.type = type;
+        this.name = name;
+        this.width = type.getWidth();
+        this.offset = offset;
+    }*/
 
-	public static boolean isTypeError(PType type)	{ return type == PType.ERROR; }
-
-	public static boolean isTypeNonEmptyPointer(PType type) {
-		return isTypePointer(type) && type != PType.VOIDP;
-	}
-
-	public static boolean isTypePrimitive(PType type) {
-		return !isTypePointer(type);
-	}
-
-	public static boolean isTypeConvertibleTo(Symbol.PType from, Symbol.PType to)
-	{
-		if(from == to) return true;
-		if(from == Symbol.PType.INT && to == Symbol.PType.FLOAT) return true;
-		if(from == PType.VOIDP && isTypePointer(to)) return true;
-		return false;
-	}
-
-	public static PType getPrimitiveType(PType pointerType)
-	{
-		if (!isTypePointer(pointerType))
-		{
-			return pointerType;
-		}
-		String temp = pointerType.toString();
-		temp = temp.replace("P",  "");
-		return PType.valueOf(temp.toUpperCase(Locale.ROOT));
-	}
-
-	public static PType getPointerType(PType primitiveType)
-	{
-		if (isTypePointer(primitiveType))
-		{
-			return primitiveType;
-		}
-		String temp = primitiveType.toString() + "P";
-		return PType.valueOf(temp.toUpperCase(Locale.ROOT));
-	}
-
+    public String toString()
+    {
+        return name + ":" + this.type;
+    }
 }
