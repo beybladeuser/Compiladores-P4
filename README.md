@@ -21,10 +21,10 @@ now fill all the blanks as such:
 
 make sure that project structure and antlr configs are setup properly
 
-[addConf]: https://github.com/beybladeuser/Compiladores-P3/raw/main/ReadmeIMG/add_config.png "Add run config"
-[addConfPlus]: https://github.com/beybladeuser/Compiladores-P3/raw/main/ReadmeIMG/add_config_plus.png "Add run config press plus"
-[addApp]: https://github.com/beybladeuser/Compiladores-P3/raw/main/ReadmeIMG/add_aplication.png "Add app"
-[addConfFinal]: https://github.com/beybladeuser/Compiladores-P3/raw/main/ReadmeIMG/add_end.png "Add conf final"
+[addConf]: https://github.com/beybladeuser/Compiladores-P4/raw/main/ReadmeIMG/add_config.png "Add run config"
+[addConfPlus]: https://github.com/beybladeuser/Compiladores-P4/raw/main/ReadmeIMG/add_config_plus.png "Add run config press plus"
+[addApp]: https://github.com/beybladeuser/Compiladores-P4/raw/main/ReadmeIMG/add_aplication.png "Add app"
+[addConfFinal]: https://github.com/beybladeuser/Compiladores-P4/raw/main/ReadmeIMG/add_end.png "Add conf final"
 
 ## Changing running arguments
 
