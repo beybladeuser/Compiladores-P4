@@ -27,4 +27,13 @@ make sure that project structure and antlr configs are setup properly
 [addConfFinal]: https://github.com/beybladeuser/Compiladores-P4/raw/main/ReadmeIMG/add_end.png "Add conf final"
 
 ## Changing running arguments
+The arguments used in the running of this program are the java program arguments
+to change this click in the following:
+![alt change_config][change_config]
 
+then change the highlighted field:
+![alt change_run_args][change_run_args]
+
+the first argument is the input file, the file that the 3 address code will be generated for.
+
+the second argument is optional, and it specifies the output file, if its not specified the output will be the same as the input except the file extencion is .tac
