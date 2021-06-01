@@ -37,3 +37,7 @@ then change the highlighted field:
 the first argument is the input file, the file that the 3 address code will be generated for.
 
 the second argument is optional, and it specifies the output file, if its not specified the output will be the same as the input except the file extencion is .tac
+
+
+[change_config]: https://github.com/beybladeuser/Compiladores-P4/blob/main/ReadmeIMG/change_config.png?raw=true "change config"
+[change_run_args]: https://github.com/beybladeuser/Compiladores-P4/blob/main/ReadmeIMG/change_run_args.png?raw=true "change run args"
