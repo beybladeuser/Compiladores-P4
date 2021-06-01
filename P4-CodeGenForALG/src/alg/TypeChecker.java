@@ -3,8 +3,9 @@ package alg;
 import Symbols.FunctionSymbol;
 import Symbols.Scope;
 import Symbols.Symbol;
+import Symbols.Type;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ErrorNode;
+//import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -21,12 +22,12 @@ public class TypeChecker extends algBaseListener{
 	public boolean hasAlg;
 	public boolean inCycle = false;
 
-	private List<List<Symbol.PType>> currentCallArgTypes = new ArrayList<>();
+	private List<List<Type>> currentCallArgTypes = new ArrayList<>();
 
 	public List<FunctionSymbol> functionScope;
 	public List<Integer> lines;
 
-	public ParseTreeProperty<Symbol.PType> exprType = new ParseTreeProperty<>();
+	public ParseTreeProperty<Type> exprType = new ParseTreeProperty<>();
 	public ParseTreeProperty<Scope> scopes = new ParseTreeProperty<>();
 
 	public TypeChecker(List<FunctionSymbol> functionScope, List<Integer> lines) {
@@ -68,9 +69,13 @@ public class TypeChecker extends algBaseListener{
 		return true;
 	}
 
+	@Override public void enterEveryRule(ParserRuleContext ctx) {
+		scopes.put(ctx, currentScope);
+	}
 	public void enterAlg_file(alg.Alg_fileContext ctx) {
 		this.globalScope = new Scope(null);
 		this.currentScope = this.globalScope;
+		scopes.put(ctx, currentScope);
 		this.semanticErrors = 0;
 		for (int i = 0 ; i < functionScope.size() ; i++){
 			defineSymbolLine(lines.get(i), functionScope.get(i));
@@ -98,12 +103,12 @@ public class TypeChecker extends algBaseListener{
 		Symbol s = new Symbol(ctx.alg_type().getText(),ctx.IDENT().getText());
 		defineSymbol(ctx, s);
 		if (ctx.children.get(3).getText().equals("[")){
-			Symbol.PType eType = exprType.get(ctx.alg_expression());
+			Type eType = exprType.get(ctx.alg_expression());
 			if (!s.isPointerType()) {
 				System.err.println("Line: " + ctx.IDENT().getSymbol().getLine() +"; Expected var " + s.name + " to be of pointer type");
 				this.semanticErrors++;
 			}
-			if (!Symbol.isTypeConvertibleTo(eType, Symbol.PType.INT)) {
+			if (!Symbol.isTypeConvertibleTo(eType, new Type(false, Type.PType.INT) )) {
 				String expected = s.getTypeString() + " " + s.name + "= [INT]";
 				String actual = s.getTypeString() + " " + s.name + "= [" + Symbol.typeToString(eType) + "]";
 				System.err.println("Line: " + ctx.IDENT().getSymbol().getLine() +"; Expected " + expected + " but got " + actual );
@@ -112,7 +117,7 @@ public class TypeChecker extends algBaseListener{
 		}
 		else {
 			alg.Alg_expressionContext temp = ctx.alg_expression();
-			Symbol.PType eType = exprType.get(temp);
+			Type eType = exprType.get(temp);
 			if (!Symbol.isTypeConvertibleTo(eType, s.type)){
 				System.err.println("Line: " + ctx.IDENT().getSymbol().getLine() + "; Initializing var " + s.name + " with expression of incompatible type " + Symbol.typeToString(eType));
 				this.semanticErrors++;
@@ -123,27 +128,27 @@ public class TypeChecker extends algBaseListener{
 
 
 	public void exitInt(alg.IntContext ctx) {
-		exprType.put(ctx, Symbol.PType.INT);
+		exprType.put(ctx, new Type(false, Type.PType.INT) );
 	}
 
 	public void exitNull(alg.NullContext ctx) {
-		exprType.put(ctx, Symbol.PType.VOIDP);
+		exprType.put(ctx, new Type(true, Type.PType.VOID) );
 	}
 
 	public void exitReal(alg.RealContext ctx) {
-		exprType.put(ctx, Symbol.PType.FLOAT);
+		exprType.put(ctx, new Type(false, Type.PType.FLOAT));
 	}
 
 	public void exitBool_True(alg.Bool_TrueContext ctx) {
-		exprType.put(ctx, Symbol.PType.BOOL);
+		exprType.put(ctx, new Type(false, Type.PType.BOOLEAN));
 	}
 
 	public void exitBool_False(alg.Bool_FalseContext ctx) {
-		exprType.put(ctx, Symbol.PType.BOOL);
+		exprType.put(ctx, new Type(false, Type.PType.BOOLEAN));
 	}
 
 	public void exitString(alg.StringContext ctx) {
-		exprType.put(ctx, Symbol.PType.STRING);
+		exprType.put(ctx, new Type(false, Type.PType.STRING));
 	}
 
 	public void exitVar(alg.VarContext ctx) {
@@ -153,14 +158,14 @@ public class TypeChecker extends algBaseListener{
 		{
 			System.err.println("Line: " + ctx.IDENT().getSymbol().getLine() + "; Undefined variable " + varName);
 			this.semanticErrors++;
-			exprType.put(ctx,Symbol.PType.ERROR);
+			exprType.put(ctx, new Type(false, Type.PType.ERROR));
 			return;
 		}
 		if(s instanceof FunctionSymbol)
 		{
 			System.err.println("Line: " + ctx.IDENT().getSymbol().getLine() + "; Using function symbol " + varName + " as variable");
 			this.semanticErrors++;
-			exprType.put(ctx,Symbol.PType.ERROR);
+			exprType.put(ctx, new Type(false, Type.PType.ERROR));
 			return;
 		}
 
@@ -180,42 +185,42 @@ public class TypeChecker extends algBaseListener{
 	}
 
 	public void exitParen_fail_1(alg.Paren_fail_1Context ctx) {
-		exprType.put(ctx, Symbol.PType.ERROR);
+		exprType.put(ctx, new Type(false, Type.PType.ERROR));
 	}
 
 	public void exitParen_fail_2(alg.Paren_fail_2Context ctx) {
-		exprType.put(ctx, Symbol.PType.ERROR);
+		exprType.put(ctx, new Type(false, Type.PType.ERROR));
 	}
 
 	public void exitAnd_op(alg.And_opContext ctx) {
-		Symbol.PType e1 = exprType.get(ctx.alg_expression(0));
-		Symbol.PType e2 = exprType.get(ctx.alg_expression(1));
+		Type e1 = exprType.get(ctx.alg_expression(0));
+		Type e2 = exprType.get(ctx.alg_expression(1));
 
-		if (!Symbol.isTypeConvertibleTo(e1, Symbol.PType.BOOL) || !Symbol.isTypeConvertibleTo(e2, Symbol.PType.BOOL)) {
+		if (!Symbol.isTypeConvertibleTo(e1, new Type(false, Type.PType.BOOLEAN)) || !Symbol.isTypeConvertibleTo(e2, new Type(false, Type.PType.BOOLEAN))) {
 			System.err.println("Line: " + ctx.getStart().getLine() + "; In expression " + ctx.getText() + " expected both left and right expressions to be a non empty pointers");
 			this.semanticErrors++;
-			exprType.put(ctx,Symbol.PType.ERROR);
+			exprType.put(ctx, new Type(false, Type.PType.ERROR));
 			return;
 		}
-		exprType.put(ctx,Symbol.PType.BOOL);
+		exprType.put(ctx, new Type(false, Type.PType.BOOLEAN));
 	}
 
 
 	public void exitMultiplication(alg.MultiplicationContext ctx) {
-		Symbol.PType e1 = exprType.get(ctx.alg_expression(0));
-		Symbol.PType e2 = exprType.get(ctx.alg_expression(1));
+		Type e1 = exprType.get(ctx.alg_expression(0));
+		Type e2 = exprType.get(ctx.alg_expression(1));
 
 		String operator = ctx.getChild(1).getText();
 
 		verifyMultiplication(ctx, operator, e1, e2);
 	}
 
-	private boolean verifyMultiplication(ParserRuleContext ctx, String operator, Symbol.PType e1, Symbol.PType e2) {
+	private boolean verifyMultiplication(ParserRuleContext ctx, String operator, Type e1, Type e2) {
 		if (operator.equals("%")) {
-			if (!Symbol.isTypeConvertibleTo(e1, Symbol.PType.INT) || !Symbol.isTypeConvertibleTo(e2, Symbol.PType.INT)) {
+			if (!Symbol.isTypeConvertibleTo(e1, new Type(false, Type.PType.INT)) || !Symbol.isTypeConvertibleTo(e2, new Type(false, Type.PType.INT))) {
 				System.err.println("Line: " + ctx.getStart().getLine() + "; Expected remain operation between two ints");
 				this.semanticErrors++;
-				this.exprType.put(ctx, Symbol.PType.ERROR);
+				exprType.put(ctx, new Type(false, Type.PType.ERROR));
 				return false;
 			}
 			this.exprType.put(ctx, e1);
@@ -224,48 +229,48 @@ public class TypeChecker extends algBaseListener{
 
 		if (operator.equals("/") || operator.equals("*")) {
 			//if neither is float or int
-			if (!Symbol.isTypeConvertibleTo(e1, Symbol.PType.FLOAT) || !Symbol.isTypeConvertibleTo(e2, Symbol.PType.FLOAT)) {
+			if (!Symbol.isTypeConvertibleTo(e1, new Type(false, Type.PType.FLOAT)) || !Symbol.isTypeConvertibleTo(e2, new Type(false, Type.PType.FLOAT))) {
 				System.err.println("Line: " + ctx.getStart().getLine() + "; Expected multiplication between two reals or ints");
 				this.semanticErrors++;
-				this.exprType.put(ctx, Symbol.PType.ERROR);
+				exprType.put(ctx, new Type(false, Type.PType.ERROR));
 				return false;
 			}
 
-			if (e1 == e2) {
+			if (e1.equals(e2)) {
 				this.exprType.put(ctx, e1);
 				return true;
 			}
-			if (e1 != e2) {
-				this.exprType.put(ctx, Symbol.PType.FLOAT);
+			if (!e1.equals(e2)) {
+				exprType.put(ctx, new Type(false, Type.PType.FLOAT));
 				return true;
 			}
 		}
 
 		//this should never execute
 		System.err.println("Line: " + ctx.getStart().getLine() + "; Unknown multiplication operator " + ctx.getChild(1).getText());
-		exprType.put(ctx,Symbol.PType.ERROR);
+		exprType.put(ctx, new Type(false, Type.PType.ERROR));
 		return false;
 	}
 
 	public void exitAddition(alg.AdditionContext ctx) {
-		Symbol.PType e1 = exprType.get(ctx.alg_expression(0));
-		Symbol.PType e2 = exprType.get(ctx.alg_expression(1));
+		Type e1 = exprType.get(ctx.alg_expression(0));
+		Type e2 = exprType.get(ctx.alg_expression(1));
 
 		String operator = ctx.getChild(1).getText();
 
 		verifyAddition(ctx, operator, e1, e2);
 	}
 
-	private boolean verifyAddition(ParserRuleContext ctx, String operator, Symbol.PType e1, Symbol.PType e2) {
+	private boolean verifyAddition(ParserRuleContext ctx, String operator, Type e1, Type e2) {
 		if (operator.equals("+") || operator.equals("-")) {
 			//if simbols are non numeric
-			if (!Symbol.isTypeConvertibleTo(e1, Symbol.PType.FLOAT) || !Symbol.isTypeConvertibleTo(e2, Symbol.PType.FLOAT)) {
+			if (!Symbol.isTypeConvertibleTo(e1, new Type(false, Type.PType.FLOAT)) || !Symbol.isTypeConvertibleTo(e2, new Type(false, Type.PType.FLOAT))) {
 				//if is a pointer shift
 				if (Symbol.isTypeNonEmptyPointer(e1)) {
-					if (!Symbol.isTypeConvertibleTo(e2, Symbol.PType.INT)) {
+					if (!Symbol.isTypeConvertibleTo(e2, new Type(false, Type.PType.INT))) {
 						System.err.println("Line: " + ctx.getStart().getLine() + "; In expression " + ctx.getText() + " expected " + ctx.getChild(2).getText() + " to be of type int");
 						this.semanticErrors++;
-						this.exprType.put(ctx, Symbol.PType.ERROR);
+						exprType.put(ctx, new Type(false, Type.PType.ERROR));
 						return false;
 					}
 					this.exprType.put(ctx, e1);
@@ -273,78 +278,78 @@ public class TypeChecker extends algBaseListener{
 				}
 				System.err.println("Line: " + ctx.getStart().getLine() + "; In expression " + ctx.getText() + " expected " + ctx.getChild(0).getText() + " and " + ctx.getChild(0).getText() + " to be of type int/float or form a pointer shift");
 				this.semanticErrors++;
-				this.exprType.put(ctx, Symbol.PType.ERROR);
+				exprType.put(ctx, new Type(false, Type.PType.ERROR));
 				return false;
 			}
 
-			if (e1 == e2) {
+			if (e1.equals(e2)) {
 				this.exprType.put(ctx, e1);
 				return true;
 			}
-			if (e1 != e2) {
-				this.exprType.put(ctx, Symbol.PType.FLOAT);
+			if (!e1.equals(e2)) {
+				exprType.put(ctx, new Type(false, Type.PType.FLOAT));
 				return true;
 			}
 		}
 
 		//this should never execute
 		System.err.println("Line: " + ctx.getStart().getLine() + "; Unknown adition operator " + ctx.getChild(1).getText());
-		exprType.put(ctx,Symbol.PType.ERROR);
+		exprType.put(ctx, new Type(false, Type.PType.ERROR));
 		return false;
 	}
 
 	public void exitOr_op(alg.Or_opContext ctx) {
-		Symbol.PType e1 = exprType.get(ctx.alg_expression(0));
-		Symbol.PType e2 = exprType.get(ctx.alg_expression(1));
+		Type e1 = exprType.get(ctx.alg_expression(0));
+		Type e2 = exprType.get(ctx.alg_expression(1));
 
-		if (!Symbol.isTypeConvertibleTo(e1, Symbol.PType.BOOL) || !Symbol.isTypeConvertibleTo(e2, Symbol.PType.BOOL)) {
+		if (!Symbol.isTypeConvertibleTo(e1, new Type(false, Type.PType.BOOLEAN)) || !Symbol.isTypeConvertibleTo(e2, new Type(false, Type.PType.BOOLEAN))) {
 			System.err.println("Line: " + ctx.getStart().getLine() + "; In expression " + ctx.getText() + " expected both left and right expressions to be a non empty pointers");
 			this.semanticErrors++;
-			exprType.put(ctx,Symbol.PType.ERROR);
+			exprType.put(ctx, new Type(false, Type.PType.ERROR));
 			return;
 		}
-		exprType.put(ctx,Symbol.PType.BOOL);
+		exprType.put(ctx, new Type(false, Type.PType.BOOLEAN));
 	}
 
 
 	public void exitPointer_Indexing(alg.Pointer_IndexingContext ctx) {
-		Symbol.PType e1 = exprType.get(ctx.alg_expression(0));
-		Symbol.PType e2 = exprType.get(ctx.alg_expression(1));
+		Type e1 = exprType.get(ctx.alg_expression(0));
+		Type e2 = exprType.get(ctx.alg_expression(1));
 
 		if (!Symbol.isTypeNonEmptyPointer(e1) ){
 			System.err.println("Line: " + ctx.LBRACKET().getSymbol().getLine() + "; In expression " + ctx.getText() + " expected " + ctx.alg_expression(0).getText() + " to be a non empty pointer");
 			this.semanticErrors++;
-			exprType.put(ctx,Symbol.PType.ERROR);
+			exprType.put(ctx, new Type(false, Type.PType.ERROR));
 			return;
 		}
 
-		if (!Symbol.isTypeConvertibleTo(e2, Symbol.PType.INT)){
+		if (!Symbol.isTypeConvertibleTo(e2, new Type(false, Type.PType.INT))){
 			System.err.println("Line: " + ctx.LBRACKET().getSymbol().getLine() + "; In expression " + ctx.getText() + " expected " + ctx.alg_expression(1).getText() + " to of type int");
 			this.semanticErrors++;
-			exprType.put(ctx,Symbol.PType.ERROR);
+			exprType.put(ctx, new Type(false, Type.PType.ERROR));
 			return;
 		}
 		exprType.put(ctx, Symbol.getPrimitiveType(e1));
 	}
 
 	public void exitComparisson(alg.ComparissonContext ctx) {
-		Symbol.PType e1 = exprType.get(ctx.alg_expression(0));
-		Symbol.PType e2 = exprType.get(ctx.alg_expression(1));
+		Type e1 = exprType.get(ctx.alg_expression(0));
+		Type e2 = exprType.get(ctx.alg_expression(1));
 
 		String operator = ctx.getChild(1).getText();
 
 		verifyComparisson(ctx, operator, e1, e2);
 	}
 
-	private boolean verifyComparisson(ParserRuleContext ctx, String operator, Symbol.PType e1, Symbol.PType e2) {
+	private boolean verifyComparisson(ParserRuleContext ctx, String operator, Type e1, Type e2) {
 		if (operator.equals("<") || operator.equals(">") || operator.equals("<=") || operator.equals(">=")) {
-			if (!Symbol.isTypeConvertibleTo(e1, Symbol.PType.FLOAT) || !Symbol.isTypeConvertibleTo(e2, Symbol.PType.FLOAT)) {
+			if (!Symbol.isTypeConvertibleTo(e1, new Type(false, Type.PType.FLOAT)) || !Symbol.isTypeConvertibleTo(e2, new Type(false, Type.PType.FLOAT))) {
 				System.err.println("Line: " + ctx.getStart().getLine() + "; Expected inequality comparison between two reals or ints");
 				this.semanticErrors++;
-				this.exprType.put(ctx, Symbol.PType.ERROR);
+				exprType.put(ctx, new Type(false, Type.PType.ERROR));
 				return false;
 			}
-			this.exprType.put(ctx, Symbol.PType.BOOL);
+			exprType.put(ctx, new Type(false, Type.PType.BOOLEAN));
 			return true;
 		}
 
@@ -352,7 +357,7 @@ public class TypeChecker extends algBaseListener{
 			if (Symbol.isTypePrimitive(e1) && Symbol.isTypePrimitive(e2) && e1 != e2) {
 				System.err.println("Line: " + ctx.getStart().getLine() + "; Expected equality comparison between two expressions of equal primitive type");
 				this.semanticErrors++;
-				this.exprType.put(ctx, Symbol.PType.ERROR);
+				exprType.put(ctx, new Type(false, Type.PType.ERROR));
 				return false;
 			}
 
@@ -360,18 +365,18 @@ public class TypeChecker extends algBaseListener{
 				if (!Symbol.isTypeConvertibleTo(e1, e2) && !Symbol.isTypeConvertibleTo(e2, e1)){
 					System.err.println("Line: " + ctx.getStart().getLine() + "; Expected equality comparison between two pointer of compatible type");
 					this.semanticErrors++;
-					this.exprType.put(ctx, Symbol.PType.ERROR);
+					exprType.put(ctx, new Type(false, Type.PType.ERROR));
 					return false;
 				}
 
 			}
-			this.exprType.put(ctx, Symbol.PType.BOOL);
+			exprType.put(ctx, new Type(false, Type.PType.BOOLEAN));
 			return true;
 		}
 
 		//this should never execute
 		System.err.println("Line: " + ctx.getStart().getLine() + "; Unknown comparisson operator " + ctx.getChild(1).getText());
-		exprType.put(ctx,Symbol.PType.ERROR);
+		exprType.put(ctx, new Type(false, Type.PType.ERROR));
 		return false;
 	}
 
@@ -383,23 +388,23 @@ public class TypeChecker extends algBaseListener{
 	public void exitUnary_Op(alg.Unary_OpContext ctx) {
 		String operator = ctx.children.get(0).getText();
 
-		Symbol.PType e1 = exprType.get(ctx.alg_expression());
+		Type e1 = exprType.get(ctx.alg_expression());
 
 		verifyUnaryOperator(ctx, operator, e1);
 	}
 
-	private boolean verifyUnaryOperator(ParserRuleContext ctx, String operator, Symbol.PType e1)
+	private boolean verifyUnaryOperator(ParserRuleContext ctx, String operator, Type e1)
 	{
-		if(e1 == Symbol.PType.ERROR)
+		if(e1.isError())
 		{
-			exprType.put(ctx,Symbol.PType.ERROR);
+			exprType.put(ctx, new Type(false, Type.PType.ERROR));
 			return false;
 		}
 
 		if (operator.equals("+") || operator.equals("-")){
-			if (!Symbol.isTypeConvertibleTo(e1, Symbol.PType.INT) || !Symbol.isTypeConvertibleTo(e1, Symbol.PType.FLOAT)){
+			if (!Symbol.isTypeConvertibleTo(e1, new Type(false, Type.PType.INT)) || !Symbol.isTypeConvertibleTo(e1, new Type(false, Type.PType.FLOAT))){
 				System.err.println("Line: " + ctx.getStart().getLine() + "; In expression " + ctx.getText() + " expected " + ctx.getChild(1).getText() + " to of type int or float");
-				exprType.put(ctx,Symbol.PType.ERROR);
+				exprType.put(ctx, new Type(false, Type.PType.ERROR));
 				return false;
 			}
 			exprType.put(ctx,e1);
@@ -407,9 +412,9 @@ public class TypeChecker extends algBaseListener{
 		}
 
 		if (operator.equals("~")) {
-			if (!Symbol.isTypeConvertibleTo(e1, Symbol.PType.BOOL)){
+			if (!Symbol.isTypeConvertibleTo(e1, new Type(false, Type.PType.BOOLEAN))){
 				System.err.println("Line: " + ctx.getStart().getLine() + "; In expression " + ctx.getText() + " expected " + ctx.getChild(1).getText() + " to of type boolean");
-				exprType.put(ctx,Symbol.PType.ERROR);
+				exprType.put(ctx, new Type(false, Type.PType.ERROR));
 				return false;
 			}
 			exprType.put(ctx,e1);
@@ -417,9 +422,9 @@ public class TypeChecker extends algBaseListener{
 		}
 
 		if (operator.equals("?")) {
-			if (Symbol.isTypePointer(e1) || e1 == Symbol.PType.VOID) {
+			if (Symbol.isTypePointer(e1) || e1.equals(new Type(false, Type.PType.VOID))) {
 				System.err.println("Line: " + ctx.getStart().getLine() + "; In expression " + ctx.getText() + " expected " + ctx.getChild(1).getText() + " to of non pointer type");
-				exprType.put(ctx,Symbol.PType.ERROR);
+				exprType.put(ctx, new Type(false, Type.PType.ERROR));
 				return false;
 			}
 			if (!(ctx.getChild(1) instanceof alg.Pointer_IndexingContext)
@@ -431,7 +436,7 @@ public class TypeChecker extends algBaseListener{
 					)
 			){
 				System.err.println("Line: " + ctx.getStart().getLine() + "; In expression " + ctx.getText() + " expected " + ctx.getChild(1).getText() + " to either a pointer indexing or an identifier");
-				exprType.put(ctx,Symbol.PType.ERROR);
+				exprType.put(ctx, new Type(false, Type.PType.ERROR));
 				return false;
 			}
 			exprType.put(ctx,Symbol.getPointerType(e1));
@@ -440,7 +445,7 @@ public class TypeChecker extends algBaseListener{
 
 		//this should never execute
 		System.err.println("Line: " + ctx.getStart().getLine() + "; Unknown unary operator " + ctx.getChild(0).getText());
-		exprType.put(ctx,Symbol.PType.ERROR);
+		exprType.put(ctx, new Type(false, Type.PType.ERROR));
 		return false;
 	}
 
@@ -544,7 +549,7 @@ public class TypeChecker extends algBaseListener{
 	@Override public void exitNormal_Function_Call(alg.Normal_Function_CallContext ctx) {
 		String functionName = ctx.IDENT().getText();
 		Symbol s = this.currentScope.resolve(functionName);
-		List<Symbol.PType> call_args = this.currentCallArgTypes.get(currentCallArgTypes.size() - 1);
+		List<Type> call_args = this.currentCallArgTypes.get(currentCallArgTypes.size() - 1);
 		this.currentCallArgTypes.remove(currentCallArgTypes.size() - 1);
 		if(s == null)
 		{
@@ -553,7 +558,7 @@ public class TypeChecker extends algBaseListener{
 			//System.err.println("USHIWHISHIWHI " + x);
 			this.semanticErrors++;
 			//this.validated = false;
-			exprType.put(ctx,Symbol.PType.ERROR);
+			exprType.put(ctx, new Type(false, Type.PType.ERROR));
 			return;
 		}
 
@@ -585,7 +590,7 @@ public class TypeChecker extends algBaseListener{
 		else{
 			System.err.println("Using " + functionName + " as function in line " + ctx.IDENT().getSymbol().getLine());
 			this.semanticErrors++;
-			exprType.put(ctx,Symbol.PType.ERROR);
+			exprType.put(ctx, new Type(false, Type.PType.ERROR));
 			//this.validated = false;
 			return;
 		}
@@ -594,33 +599,33 @@ public class TypeChecker extends algBaseListener{
 	}
 
 	@Override public void exitAT_Function_Call(alg.AT_Function_CallContext ctx) {
-		exprType.put(ctx, Symbol.PType.STRING);
+		exprType.put(ctx, new Type(false, Type.PType.STRING));
 	}
 
 	@Override public void exitSizeof_Function_Call(alg.Sizeof_Function_CallContext ctx) {
-		exprType.put(ctx, Symbol.PType.INT);
+		exprType.put(ctx, new Type(false, Type.PType.INT));
 	}
 
 	@Override public void exitWrite_Function_Call(alg.Write_Function_CallContext ctx) {
-		for (Symbol.PType argType : this.currentCallArgTypes.get(this.currentCallArgTypes.size() - 1)) {
+		for (Type argType : this.currentCallArgTypes.get(this.currentCallArgTypes.size() - 1)) {
 			if (Symbol.isTypePointer(argType)) {
 				System.err.println("Line: " + ctx.getStart().getLine() + "; Invalid argument for function write, expected a non pointer type but got " + Symbol.typeToString(argType));
 				this.semanticErrors++;
 			}
 		}
 		this.currentCallArgTypes.remove(this.currentCallArgTypes.size() - 1);
-		exprType.put(ctx, Symbol.PType.VOID);
+		exprType.put(ctx, new Type(false, Type.PType.VOID));
 	}
 
 	@Override public void exitWriteLn_Function_Call(alg.WriteLn_Function_CallContext ctx) {
-		for (Symbol.PType argType : this.currentCallArgTypes.get(this.currentCallArgTypes.size() - 1)) {
+		for (Type argType : this.currentCallArgTypes.get(this.currentCallArgTypes.size() - 1)) {
 			if (Symbol.isTypePointer(argType)) {
 				System.err.println("Line: " + ctx.getStart().getLine() + "; Invalid argument for function writeln, expected a non pointer type but got " + Symbol.typeToString(argType));
 				this.semanticErrors++;
 			}
 		}
 		this.currentCallArgTypes.remove(this.currentCallArgTypes.size() - 1);
-		exprType.put(ctx, Symbol.PType.VOID);
+		exprType.put(ctx, new Type(false, Type.PType.VOID));
 	}
 
 
@@ -628,7 +633,7 @@ public class TypeChecker extends algBaseListener{
 
 
 	public void enterAlg_funtion_call_args(alg.Alg_funtion_call_argsContext ctx) {
-		this.currentCallArgTypes.add( new ArrayList<Symbol.PType>() );
+		this.currentCallArgTypes.add( new ArrayList<>() );
 	}
 
 
@@ -681,13 +686,13 @@ public class TypeChecker extends algBaseListener{
 
 	public void exitReturn_control_instr(alg.Return_control_instrContext ctx) {
 		String returnVal = ctx.getChild(1).getText();
-		Symbol.PType returnType;
+		Type returnType;
 		if (!returnVal.equals("")){
 			returnType = exprType.get(ctx.getChild(1).getChild(0));
 
 		}
 		else {
-			returnType = Symbol.PType.VOID;
+			returnType = new Type(false, Type.PType.VOID);
 		}
 
 		if (!Symbol.isTypeConvertibleTo(returnType, this.currentFunction.type)) {
@@ -727,7 +732,7 @@ public class TypeChecker extends algBaseListener{
 			System.err.println("Line: " + ctx.start.getLine() +  "; Undefined variable " + variableName);// + ctx.getChild(0).getText() + " position " + ctx.ID().getSymbol().getCharPositionInLine());
 			this.semanticErrors++;
 			//this.validated = false;
-			exprType.put(ctx,Symbol.PType.ERROR);
+			exprType.put(ctx, new Type(false, Type.PType.ERROR));
 			return;
 		}
 
@@ -736,7 +741,7 @@ public class TypeChecker extends algBaseListener{
 			System.err.println("Line: " + ctx.start.getLine() + "Using function symbol " + variableName + " as variable");// + ctx.ID().getSymbol().getLine());
 			this.semanticErrors++;
 			//this.validated = false;
-			exprType.put(ctx,Symbol.PType.ERROR);
+			exprType.put(ctx, new Type(false, Type.PType.ERROR));
 			return;
 
 		}
@@ -744,20 +749,20 @@ public class TypeChecker extends algBaseListener{
 	}
 
 	public void exitLado_esquerdo_pointer_index(alg.Lado_esquerdo_pointer_indexContext ctx) {
-		Symbol.PType e1 = exprType.get(ctx.alg_expression(0));
-		Symbol.PType e2 = exprType.get(ctx.alg_expression(1));
+		Type e1 = exprType.get(ctx.alg_expression(0));
+		Type e2 = exprType.get(ctx.alg_expression(1));
 
 		if (!Symbol.isTypeNonEmptyPointer(e1) ){
 			System.err.println("Line: " + ctx.LBRACKET().getSymbol().getLine() + "; In expression " + ctx.getText() + " expected " + ctx.alg_expression(0).getText() + " to be a non empty pointer");
 			this.semanticErrors++;
-			exprType.put(ctx,Symbol.PType.ERROR);
+			exprType.put(ctx, new Type(false, Type.PType.ERROR));
 			return;
 		}
 
-		if (!Symbol.isTypeConvertibleTo(e2, Symbol.PType.INT)){
+		if (!Symbol.isTypeConvertibleTo(e2, new Type(false, Type.PType.INT))){
 			System.err.println("Line: " + ctx.LBRACKET().getSymbol().getLine() + "; In expression " + ctx.getText() + " expected " + ctx.alg_expression(1).getText() + " to be of type int");
 			this.semanticErrors++;
-			exprType.put(ctx,Symbol.PType.ERROR);
+			exprType.put(ctx, new Type(false, Type.PType.ERROR));
 			return;
 		}
 		exprType.put(ctx, Symbol.getPrimitiveType(e1));
@@ -772,7 +777,7 @@ public class TypeChecker extends algBaseListener{
 			//exprType.put(ctx,Symbol.PType.ERROR);
 			return;
 		}
-		if(exprType.get(ctx.alg_expression()) == Symbol.PType.VOID){
+		if(exprType.get(ctx.alg_expression()).equals(new Type(false, Type.PType.VOID))){
 			System.err.println("Line: " + ctx.start.getLine() + "; Cannot assign variable to void type");
 			this.semanticErrors++;
 			//this.validated = false;

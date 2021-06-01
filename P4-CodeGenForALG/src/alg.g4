@@ -157,12 +157,12 @@ alg_funtion_call_args_aux :
 
 //INSTRUÇÕES
 alg_instruction :
-    alg_expression SEMMI_COLON
-    |   alg_instruction_controle SEMMI_COLON
-    |   alg_atrib SEMMI_COLON
-    |   alg_instruction_cond
-    |   alg_cicle
-    |   alg_subblock;
+    alg_expression SEMMI_COLON # ExpInst
+    |   alg_instruction_controle SEMMI_COLON # Ctrl
+    |   alg_atrib SEMMI_COLON # Assign
+    |   alg_instruction_cond # If
+    |   alg_cicle # While
+    |   alg_subblock # SubBlock;
 
 //INSTRUCAO CONTROLE
 //alg_instruction_controle : LEAVE | RESTART | RETURN | RETURN alg_expression;

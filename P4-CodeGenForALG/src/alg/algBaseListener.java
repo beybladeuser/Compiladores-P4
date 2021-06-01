@@ -1,4 +1,4 @@
-// Generated from E:/escola/universidade_boi/3_ano/2_semestre/Compiladores/Praticas/Compiladores-P3/P3-SemanticsForALG/src\alg.g4 by ANTLR 4.9.1
+// Generated from E:/escola/universidade_boi/3_ano/2_semestre/Compiladores/Praticas/Compiladores-P4/P4-CodeGenForALG/src\alg.g4 by ANTLR 4.9.1
 package alg;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -556,13 +556,73 @@ public class algBaseListener implements algListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterAlg_instruction(alg.Alg_instructionContext ctx) { }
+	@Override public void enterExpInst(alg.ExpInstContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitAlg_instruction(alg.Alg_instructionContext ctx) { }
+	@Override public void exitExpInst(alg.ExpInstContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterCtrl(alg.CtrlContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitCtrl(alg.CtrlContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterAssign(alg.AssignContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAssign(alg.AssignContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterIf(alg.IfContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitIf(alg.IfContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterWhile(alg.WhileContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitWhile(alg.WhileContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterSubBlock(alg.SubBlockContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitSubBlock(alg.SubBlockContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

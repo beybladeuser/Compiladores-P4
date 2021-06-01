@@ -1,4 +1,4 @@
-// Generated from E:\escola\u005Cuniversidade_boi\3_ano\2_semestre\Compiladores\Praticas\Compiladores-P3\P3-SemanticsForALG\src\algLexer.g4 by ANTLR 4.9.1
+// Generated from E:\escola\u005Cuniversidade_boi\3_ano\2_semestre\Compiladores\Praticas\Compiladores-P4\P4-CodeGenForALG\src\algLexer.g4 by ANTLR 4.9.1
 package alg;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;

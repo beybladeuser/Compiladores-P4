@@ -1,4 +1,4 @@
-// Generated from E:/escola/universidade_boi/3_ano/2_semestre/Compiladores/Praticas/Compiladores-P3/P3-SemanticsForALG/src\alg.g4 by ANTLR 4.9.1
+// Generated from E:/escola/universidade_boi/3_ano/2_semestre/Compiladores/Praticas/Compiladores-P4/P4-CodeGenForALG/src\alg.g4 by ANTLR 4.9.1
 package alg;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -308,11 +308,47 @@ public interface algVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAlg_funtion_call_args_aux(alg.Alg_funtion_call_args_auxContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link alg#alg_instruction}.
+	 * Visit a parse tree produced by the {@code ExpInst}
+	 * labeled alternative in {@link alg#alg_instruction}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitAlg_instruction(alg.Alg_instructionContext ctx);
+	T visitExpInst(alg.ExpInstContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code Ctrl}
+	 * labeled alternative in {@link alg#alg_instruction}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCtrl(alg.CtrlContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code Assign}
+	 * labeled alternative in {@link alg#alg_instruction}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAssign(alg.AssignContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code If}
+	 * labeled alternative in {@link alg#alg_instruction}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIf(alg.IfContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code While}
+	 * labeled alternative in {@link alg#alg_instruction}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitWhile(alg.WhileContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code SubBlock}
+	 * labeled alternative in {@link alg#alg_instruction}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSubBlock(alg.SubBlockContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code Leave_control_instr}
 	 * labeled alternative in {@link alg#alg_instruction_controle}.

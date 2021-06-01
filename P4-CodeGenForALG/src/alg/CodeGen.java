@@ -73,7 +73,7 @@ public class CodeGen extends algBaseVisitor<Symbol>{
     }
 
     //start : decl+ EOF;
-    public Symbol visitStart(alg.StartContext ctx)
+    public Symbol visitAlg_file(alg.Alg_fileContext ctx)
     {
         //initialize the Global scope
         this.globalScope = this.scopes.get(ctx);
@@ -84,7 +84,7 @@ public class CodeGen extends algBaseVisitor<Symbol>{
 
     //simple expressions
     //simple_exp --> LINT;
-    public Symbol visitLInt(alg.LIntContext ctx)
+    public Symbol visitInt(alg.IntContext ctx)
     {
         Symbol s = new Symbol(new Type(Type.PType.INT),ctx.getText(), ctx.getText());
         //literal constants can be stored as constants in the global scope, indexed by their value
@@ -95,7 +95,7 @@ public class CodeGen extends algBaseVisitor<Symbol>{
     }
 
     //simple_exp --> LITERAL_R
-    public Symbol visitLFloat(alg.LFloatContext ctx)
+    public Symbol visitReal(alg.RealContext ctx)
     {
         Symbol s = new Symbol(new Type(Type.PType.FLOAT),ctx.getText(),ctx.getText());
         //literal constants can be stored as constants in the global scope, indexed by their value
@@ -106,7 +106,7 @@ public class CodeGen extends algBaseVisitor<Symbol>{
     }
 
     //simple_exp --> LITERAL_STRING
-    public Symbol visitLString(alg.LStringContext ctx)
+    public Symbol visitString(alg.StringContext ctx)
     {
         String strText = ctx.getText();
         //we need to remove the trailing "" and add the null character
@@ -125,14 +125,23 @@ public class CodeGen extends algBaseVisitor<Symbol>{
     }
 
     //simple_exp --> Null
-    public Symbol visitLNull(alg.LNullContext ctx)
+    public Symbol visitNull(alg.NullContext ctx)
     {
         //returns the special symbol null. This one doesn't even need to be stored in the symbol table
         return new Symbol(new Type(true, Type.PType.VOID),"null","null");
     }
 
-    //simple_exp --> (TRUE|FALSE)
-    public Symbol visitLBoolean(alg.LBooleanContext ctx)
+    public Symbol visitBool_True(alg.Bool_TrueContext ctx)
+    {
+        Symbol s = new Symbol(new Type(Type.PType.BOOLEAN),ctx.getText(),ctx.getText());
+        //literal constants can be stored as constants in the global scope, indexed by their value
+        this.globalScope.define(s);
+        //we need to resolve, because it might be the case that the same constant was already declared, and in this case
+        //we return the previously created symbol instead of a new one
+        return globalScope.resolve(s.name);
+    }
+
+    public Symbol visitBool_False(alg.Bool_FalseContext ctx)
     {
         Symbol s = new Symbol(new Type(Type.PType.BOOLEAN),ctx.getText(),ctx.getText());
         //literal constants can be stored as constants in the global scope, indexed by their value
@@ -148,28 +157,28 @@ public class CodeGen extends algBaseVisitor<Symbol>{
         return this.scopes.get(ctx).resolve(ctx.IDENT().getText());
     }
 
-    public Symbol visitSimpleExp(alg.SimpleExpContext ctx)
+    public Symbol visitSimple_expr(alg.Simple_exprContext ctx)
     {
-        return visit(ctx.simple_exp());
+        return visit(ctx.alg_simple_expression());
     }
 
     public Symbol visitParen(alg.ParenContext ctx)
     {
-        return visit(ctx.exp());
+        return visit(ctx.alg_expression());
     }
 
-    public Symbol visitUnary(alg.UnaryContext ctx)
+    public Symbol visitUnary_Op(alg.Unary_OpContext ctx)
     {
         String op = "";
-        int opType = ctx.unary_op().start.getType();
-        Symbol s1 = visit(ctx.exp());
+        int opType = ctx.start.getType();
+        Symbol s1 = visit(ctx.alg_expression());
         //if it is a + we don't need to do anything
-        if(opType==algLexer.PLUS) return s1;
-        if(opType==algLexer.MINUS)
+        if(opType==algLexer.PLUS_OP) return s1;
+        if(opType==algLexer.MINUS_OP)
         {
             op = "-";
         }
-        else if(opType == algLexer.NOT)
+        else if(opType == algLexer.NEGATION_OP)
         {
             op = "not";
         }
@@ -179,61 +188,61 @@ public class CodeGen extends algBaseVisitor<Symbol>{
         return t;
     }
 
-    public Symbol visitMulDiv(alg.MulDivContext ctx)
+    public Symbol visitMultiplication(alg.MultiplicationContext ctx)
     {
-        Symbol t1 = visit(ctx.exp(0));
-        Symbol t2 = visit(ctx.exp(1));
+        Symbol t1 = visit(ctx.alg_expression(0));
+        Symbol t2 = visit(ctx.alg_expression(1));
         Type maxType = Type.getMaxType(t1.type,t2.type);
         t1 = widen(ctx,t1,t1.type,maxType);
         t2 = widen(ctx,t2,t2.type,maxType);
-        String op = ctx.mul_op().getText();
+        String op = ctx.getChild(1).getText();
 
         Symbol t = this.temp(ctx,maxType);
         emit(t.name + " = " + t1.name + " " + op + " " + t2.name);
         return t;
     }
 
-    public Symbol visitAddSub(alg.AddSubContext ctx) {
+    public Symbol visitAddition(alg.AdditionContext ctx) {
 
-        Symbol t1 = visit(ctx.exp(0));
-        Symbol t2 = visit(ctx.exp(1));
+        Symbol t1 = visit(ctx.alg_expression(0));
+        Symbol t2 = visit(ctx.alg_expression(1));
         Type maxType = Type.getMaxType(t1.type,t2.type);
         t1 = widen(ctx,t1,t1.type,maxType);
         t2 = widen(ctx,t2,t2.type,maxType);
-        String op = ctx.sum_op().getText();
+        String op = ctx.getChild(1).getText();
 
         Symbol t = this.temp(ctx,maxType);
         emit(t.name + " = " + t1.name + " " + op + " " + t2.name);
         return t;
     }
 
-    public Symbol visitCompare(alg.CompareContext ctx) {
+    public Symbol visitComparisson(alg.ComparissonContext ctx) {
 
-        Symbol t1 = visit(ctx.exp(0));
-        Symbol t2 = visit(ctx.exp(1));
+        Symbol t1 = visit(ctx.alg_expression(0));
+        Symbol t2 = visit(ctx.alg_expression(1));
         Type maxType = Type.getMaxType(t1.type,t2.type);
         t1 = widen(ctx,t1,t1.type,maxType);
         t2 = widen(ctx,t2,t2.type,maxType);
-        String op = ctx.comp_op().getText();
+        String op = ctx.getChild(1).getText();
         Symbol t = this.temp(ctx,new Type(Type.PType.BOOLEAN));
         emit(t.name + " = " + t1.name + " " + op + " " + t2.name);
         return t;
     }
 
-    public Symbol visitAnd(alg.AndContext ctx)
+    public Symbol visitAnd_op(alg.And_opContext ctx)
     {
-        Symbol t1 = visit(ctx.exp(0));
-        Symbol t2 = visit(ctx.exp(1));
+        Symbol t1 = visit(ctx.alg_expression(0));
+        Symbol t2 = visit(ctx.alg_expression(1));
         Symbol t = this.temp(ctx,new Type(Type.PType.BOOLEAN));
 
         emit(t.name + "=" + t1.name + " and " + t2.name);
         return t;
     }
 
-    public Symbol visitOr(alg.OrContext ctx)
+    public Symbol visitOr_op(alg.Or_opContext ctx)
     {
-        Symbol t1 = visit(ctx.exp(0));
-        Symbol t2 = visit(ctx.exp(1));
+        Symbol t1 = visit(ctx.alg_expression(0));
+        Symbol t2 = visit(ctx.alg_expression(1));
         Symbol t = this.temp(ctx,new Type(Type.PType.BOOLEAN));
 
         emit(t.name + "=" + t1.name + " or " + t2.name);
@@ -245,7 +254,7 @@ public class CodeGen extends algBaseVisitor<Symbol>{
     public Symbol visitExpInst(alg.ExpInstContext ctx)
     {
         //this is very easy, just visit the expression
-        visit(ctx.exp());
+        visit(ctx.alg_expression());
         //It is not mandatory to return any symbol in an instruction
         return null;
     }
@@ -255,25 +264,37 @@ public class CodeGen extends algBaseVisitor<Symbol>{
     public Symbol visitAssign(alg.AssignContext ctx)
     {
         //TODO
+        return null;
+    }
+
+    public Symbol visitAlg_atrib(alg.Alg_atribContext ctx)
+    {
+        //TODO
+        return null;
     }
 
     //T6
     //left_side --> IDENT
-    public Symbol visitLeftVar(alg.LeftVarContext ctx)
+    public Symbol visitLado_esquerdo_ident(alg.Lado_esquerdo_identContext ctx)
     {
         //TODO
+        return null;
     }
 
 
     //inst --> IF exp THEN inst (ELSE inst)?   #If
     public Symbol visitIf(alg.IfContext ctx)
     {
-        Symbol condition = visit(ctx.exp());
+        return visitAlg_instruction_cond(ctx.alg_instruction_cond());
+    }
+
+    public Symbol visitAlg_instruction_cond(alg.Alg_instruction_condContext ctx) {
+        Symbol condition = visit(ctx.alg_expression());
         String falseLabel = label("false");
         emit("ifFalse " + condition.name + " goto " + falseLabel);
-        visit(ctx.inst(0));
+        visit(ctx.alg_instruction());
 
-        if(ctx.ELSE() == null)
+        if(ctx.alg_instruction_cond_next().getText() == "")
         {
             //Single if
             emit(falseLabel + ":");
@@ -283,26 +304,25 @@ public class CodeGen extends algBaseVisitor<Symbol>{
             String nextLabel = label("next");
             emit("goto " + nextLabel);
             emit(falseLabel + ":");
-            visit(ctx.inst(1));
+            visit(ctx.alg_instruction_cond_next().alg_instruction());
             emit(nextLabel + ":");
         }
 
         return null;
     }
 
-    public Symbol visitReturn(alg.ReturnContext ctx)
+    public Symbol visitReturn_control_instr(alg.Return_control_instrContext ctx)
     {
-        emit("return");
+        if (ctx.alg_instruction_controle_next().getText() == "")
+        {
+            emit("return");
+        }
+        else
+        {
+            Symbol returnValue = visit(ctx.alg_instruction_controle_next().alg_expression());
+            emit("return " + returnValue.name);
+        }
         return null;
     }
-
-    public Symbol visitReturnValue(alg.ReturnValueContext ctx)
-    {
-        Symbol returnValue = visit(ctx.exp());
-        emit("return " + returnValue.name);
-        return null;
-    }
-
-
 
 }

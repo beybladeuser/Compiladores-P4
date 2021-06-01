@@ -12,6 +12,22 @@ public class Symbol {
     public boolean isWidthKnown;
     public Object value;
 
+    public Symbol(String type, String name)
+    {
+        boolean isPointer = false;
+        if (type.contains("<")){
+            type = type.replace("<", "");
+            type = type.replace(">", "");
+            isPointer = true;
+        }
+        if (type.charAt(type.length() - 1) == 'P'){
+            isPointer = true;
+            type = type.substring(0, type.length() - 1);
+        }
+        this.type = new Type(isPointer, type);
+        this.name = name;
+    }
+
     //usamos um enumerado para guardar o tipo, porque é mais eficiente nas comparações de tipos
     public Symbol(Type type, String name)
     {
@@ -54,5 +70,49 @@ public class Symbol {
     public String toString()
     {
         return name + ":" + this.type;
+    }
+
+    public String getTypeString()
+    {
+        return typeToString(type);
+    }
+
+    public static String typeToString(Type type)
+    {
+        return type.toString();
+    }
+
+    public boolean isPointerType(){
+        return isTypePointer(type);
+    }
+
+    public static boolean isTypePointer(Type type)
+    {
+        return type.isPointer();
+    }
+
+    public static boolean isTypeError(Type type)	{ return type.isError(); }
+
+    public static boolean isTypeNonEmptyPointer(Type type) {
+        return isTypePointer(type) && type.getPrimitiveType() != Type.PType.VOID;
+    }
+
+    public static boolean isTypePrimitive(Type type) {
+        return !isTypePointer(type);
+    }
+
+    public static boolean isTypeConvertibleTo(Type from, Type to)
+    {
+        return Type.isConvertibleTo(from, to);
+    }
+
+    public static Type getPrimitiveType(Type pointerType)
+    {
+        return new Type(false, pointerType.getPrimitiveType());
+    }
+
+    public static Type getPointerType(Type primitiveType)
+    {
+        return primitiveType.extractPointerType();
     }
 }

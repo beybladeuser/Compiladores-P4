@@ -1,4 +1,4 @@
-// Generated from E:/escola/universidade_boi/3_ano/2_semestre/Compiladores/Praticas/Compiladores-P3/P3-SemanticsForALG/src\alg.g4 by ANTLR 4.9.1
+// Generated from E:/escola/universidade_boi/3_ano/2_semestre/Compiladores/Praticas/Compiladores-P4/P4-CodeGenForALG/src\alg.g4 by ANTLR 4.9.1
 package alg;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -2475,40 +2475,130 @@ public class alg extends Parser {
 	}
 
 	public static class Alg_instructionContext extends ParserRuleContext {
-		public Alg_expressionContext alg_expression() {
-			return getRuleContext(Alg_expressionContext.class,0);
-		}
-		public TerminalNode SEMMI_COLON() { return getToken(alg.SEMMI_COLON, 0); }
-		public Alg_instruction_controleContext alg_instruction_controle() {
-			return getRuleContext(Alg_instruction_controleContext.class,0);
-		}
-		public Alg_atribContext alg_atrib() {
-			return getRuleContext(Alg_atribContext.class,0);
-		}
-		public Alg_instruction_condContext alg_instruction_cond() {
-			return getRuleContext(Alg_instruction_condContext.class,0);
-		}
-		public Alg_cicleContext alg_cicle() {
-			return getRuleContext(Alg_cicleContext.class,0);
-		}
-		public Alg_subblockContext alg_subblock() {
-			return getRuleContext(Alg_subblockContext.class,0);
-		}
 		public Alg_instructionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_alg_instruction; }
+	 
+		public Alg_instructionContext() { }
+		public void copyFrom(Alg_instructionContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	public static class ExpInstContext extends Alg_instructionContext {
+		public Alg_expressionContext alg_expression() {
+			return getRuleContext(Alg_expressionContext.class,0);
+		}
+		public TerminalNode SEMMI_COLON() { return getToken(alg.SEMMI_COLON, 0); }
+		public ExpInstContext(Alg_instructionContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof algListener ) ((algListener)listener).enterAlg_instruction(this);
+			if ( listener instanceof algListener ) ((algListener)listener).enterExpInst(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof algListener ) ((algListener)listener).exitAlg_instruction(this);
+			if ( listener instanceof algListener ) ((algListener)listener).exitExpInst(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof algVisitor ) return ((algVisitor<? extends T>)visitor).visitAlg_instruction(this);
+			if ( visitor instanceof algVisitor ) return ((algVisitor<? extends T>)visitor).visitExpInst(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class SubBlockContext extends Alg_instructionContext {
+		public Alg_subblockContext alg_subblock() {
+			return getRuleContext(Alg_subblockContext.class,0);
+		}
+		public SubBlockContext(Alg_instructionContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof algListener ) ((algListener)listener).enterSubBlock(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof algListener ) ((algListener)listener).exitSubBlock(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof algVisitor ) return ((algVisitor<? extends T>)visitor).visitSubBlock(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class AssignContext extends Alg_instructionContext {
+		public Alg_atribContext alg_atrib() {
+			return getRuleContext(Alg_atribContext.class,0);
+		}
+		public TerminalNode SEMMI_COLON() { return getToken(alg.SEMMI_COLON, 0); }
+		public AssignContext(Alg_instructionContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof algListener ) ((algListener)listener).enterAssign(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof algListener ) ((algListener)listener).exitAssign(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof algVisitor ) return ((algVisitor<? extends T>)visitor).visitAssign(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class CtrlContext extends Alg_instructionContext {
+		public Alg_instruction_controleContext alg_instruction_controle() {
+			return getRuleContext(Alg_instruction_controleContext.class,0);
+		}
+		public TerminalNode SEMMI_COLON() { return getToken(alg.SEMMI_COLON, 0); }
+		public CtrlContext(Alg_instructionContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof algListener ) ((algListener)listener).enterCtrl(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof algListener ) ((algListener)listener).exitCtrl(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof algVisitor ) return ((algVisitor<? extends T>)visitor).visitCtrl(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class WhileContext extends Alg_instructionContext {
+		public Alg_cicleContext alg_cicle() {
+			return getRuleContext(Alg_cicleContext.class,0);
+		}
+		public WhileContext(Alg_instructionContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof algListener ) ((algListener)listener).enterWhile(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof algListener ) ((algListener)listener).exitWhile(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof algVisitor ) return ((algVisitor<? extends T>)visitor).visitWhile(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class IfContext extends Alg_instructionContext {
+		public Alg_instruction_condContext alg_instruction_cond() {
+			return getRuleContext(Alg_instruction_condContext.class,0);
+		}
+		public IfContext(Alg_instructionContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof algListener ) ((algListener)listener).enterIf(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof algListener ) ((algListener)listener).exitIf(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof algVisitor ) return ((algVisitor<? extends T>)visitor).visitIf(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -2521,6 +2611,7 @@ public class alg extends Parser {
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,23,_ctx) ) {
 			case 1:
+				_localctx = new ExpInstContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(290);
@@ -2530,6 +2621,7 @@ public class alg extends Parser {
 				}
 				break;
 			case 2:
+				_localctx = new CtrlContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(293);
@@ -2539,6 +2631,7 @@ public class alg extends Parser {
 				}
 				break;
 			case 3:
+				_localctx = new AssignContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
 				setState(296);
@@ -2548,6 +2641,7 @@ public class alg extends Parser {
 				}
 				break;
 			case 4:
+				_localctx = new IfContext(_localctx);
 				enterOuterAlt(_localctx, 4);
 				{
 				setState(299);
@@ -2555,6 +2649,7 @@ public class alg extends Parser {
 				}
 				break;
 			case 5:
+				_localctx = new WhileContext(_localctx);
 				enterOuterAlt(_localctx, 5);
 				{
 				setState(300);
@@ -2562,6 +2657,7 @@ public class alg extends Parser {
 				}
 				break;
 			case 6:
+				_localctx = new SubBlockContext(_localctx);
 				enterOuterAlt(_localctx, 6);
 				{
 				setState(301);

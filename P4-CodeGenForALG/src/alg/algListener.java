@@ -1,4 +1,4 @@
-// Generated from E:/escola/universidade_boi/3_ano/2_semestre/Compiladores/Praticas/Compiladores-P3/P3-SemanticsForALG/src\alg.g4 by ANTLR 4.9.1
+// Generated from E:/escola/universidade_boi/3_ano/2_semestre/Compiladores/Praticas/Compiladores-P4/P4-CodeGenForALG/src\alg.g4 by ANTLR 4.9.1
 package alg;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -512,15 +512,77 @@ public interface algListener extends ParseTreeListener {
 	 */
 	void exitAlg_funtion_call_args_aux(alg.Alg_funtion_call_args_auxContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link alg#alg_instruction}.
+	 * Enter a parse tree produced by the {@code ExpInst}
+	 * labeled alternative in {@link alg#alg_instruction}.
 	 * @param ctx the parse tree
 	 */
-	void enterAlg_instruction(alg.Alg_instructionContext ctx);
+	void enterExpInst(alg.ExpInstContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link alg#alg_instruction}.
+	 * Exit a parse tree produced by the {@code ExpInst}
+	 * labeled alternative in {@link alg#alg_instruction}.
 	 * @param ctx the parse tree
 	 */
-	void exitAlg_instruction(alg.Alg_instructionContext ctx);
+	void exitExpInst(alg.ExpInstContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code Ctrl}
+	 * labeled alternative in {@link alg#alg_instruction}.
+	 * @param ctx the parse tree
+	 */
+	void enterCtrl(alg.CtrlContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code Ctrl}
+	 * labeled alternative in {@link alg#alg_instruction}.
+	 * @param ctx the parse tree
+	 */
+	void exitCtrl(alg.CtrlContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code Assign}
+	 * labeled alternative in {@link alg#alg_instruction}.
+	 * @param ctx the parse tree
+	 */
+	void enterAssign(alg.AssignContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code Assign}
+	 * labeled alternative in {@link alg#alg_instruction}.
+	 * @param ctx the parse tree
+	 */
+	void exitAssign(alg.AssignContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code If}
+	 * labeled alternative in {@link alg#alg_instruction}.
+	 * @param ctx the parse tree
+	 */
+	void enterIf(alg.IfContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code If}
+	 * labeled alternative in {@link alg#alg_instruction}.
+	 * @param ctx the parse tree
+	 */
+	void exitIf(alg.IfContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code While}
+	 * labeled alternative in {@link alg#alg_instruction}.
+	 * @param ctx the parse tree
+	 */
+	void enterWhile(alg.WhileContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code While}
+	 * labeled alternative in {@link alg#alg_instruction}.
+	 * @param ctx the parse tree
+	 */
+	void exitWhile(alg.WhileContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code SubBlock}
+	 * labeled alternative in {@link alg#alg_instruction}.
+	 * @param ctx the parse tree
+	 */
+	void enterSubBlock(alg.SubBlockContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code SubBlock}
+	 * labeled alternative in {@link alg#alg_instruction}.
+	 * @param ctx the parse tree
+	 */
+	void exitSubBlock(alg.SubBlockContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code Leave_control_instr}
 	 * labeled alternative in {@link alg#alg_instruction_controle}.
