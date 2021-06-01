@@ -444,17 +444,6 @@ public class TypeChecker extends algBaseListener{
 		return false;
 	}
 
-
-
-	public void enterAlg_func_type(alg.Alg_func_typeContext ctx) { }
-
-
-
-
-
-	public void exitAlg_func_type(alg.Alg_func_typeContext ctx) { }
-
-
 	/**
 	 * TODO: Os indentificadores de funcoes declarados são sempre visiveis independentemente da sua localizacao. Ou
 	 * seja, eu posso invocar uma funcao que só seja declarada mais a frente no ficheiro.
@@ -540,14 +529,6 @@ public class TypeChecker extends algBaseListener{
 		}
 	}
 
-
-
-	public void enterAlg_func_declaration_arg(alg.Alg_func_declaration_argContext ctx) {	}
-
-
-
-
-
 	public void exitAlg_func_declaration_arg(alg.Alg_func_declaration_argContext ctx) {
 		for (int i = 0; i < ctx.IDENT().size() ; i++)
 		{
@@ -558,54 +539,6 @@ public class TypeChecker extends algBaseListener{
 			defineSymbol(ctx, s);
 		}
 	}
-
-
-
-
-
-	public void enterAlg_func_body(alg.Alg_func_bodyContext ctx) { }
-
-
-
-
-
-	public void exitAlg_func_body(alg.Alg_func_bodyContext ctx) { }
-
-
-
-
-
-	public void enterAlg_func_prologue(alg.Alg_func_prologueContext ctx) { }
-
-
-
-
-
-	public void exitAlg_func_prologue(alg.Alg_func_prologueContext ctx) { }
-
-
-
-
-
-	public void enterAlg_func_epilogue(alg.Alg_func_epilogueContext ctx) { }
-
-
-
-
-
-	public void exitAlg_func_epilogue(alg.Alg_func_epilogueContext ctx) { }
-
-
-
-
-
-	public void enterAlg_block(alg.Alg_blockContext ctx) { }
-
-
-
-
-
-	public void exitAlg_block(alg.Alg_blockContext ctx) { }
 
 	//TODO: check if args are ok and Os indentificadores de funcoes declarados são sempre visiveis independentemente da sua localizacao
 	@Override public void exitNormal_Function_Call(alg.Normal_Function_CallContext ctx) {
@@ -659,45 +592,15 @@ public class TypeChecker extends algBaseListener{
 
 		//currentCallArgTypes = new ArrayList<>();
 	}
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterAT_Function_Call(alg.AT_Function_CallContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
+
 	@Override public void exitAT_Function_Call(alg.AT_Function_CallContext ctx) {
 		exprType.put(ctx, Symbol.PType.STRING);
 	}
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterSizeof_Function_Call(alg.Sizeof_Function_CallContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
+
 	@Override public void exitSizeof_Function_Call(alg.Sizeof_Function_CallContext ctx) {
 		exprType.put(ctx, Symbol.PType.INT);
 	}
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterWrite_Function_Call(alg.Write_Function_CallContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
+
 	@Override public void exitWrite_Function_Call(alg.Write_Function_CallContext ctx) {
 		for (Symbol.PType argType : this.currentCallArgTypes.get(this.currentCallArgTypes.size() - 1)) {
 			if (Symbol.isTypePointer(argType)) {
@@ -708,17 +611,7 @@ public class TypeChecker extends algBaseListener{
 		this.currentCallArgTypes.remove(this.currentCallArgTypes.size() - 1);
 		exprType.put(ctx, Symbol.PType.VOID);
 	}
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterWriteLn_Function_Call(alg.WriteLn_Function_CallContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
+
 	@Override public void exitWriteLn_Function_Call(alg.WriteLn_Function_CallContext ctx) {
 		for (Symbol.PType argType : this.currentCallArgTypes.get(this.currentCallArgTypes.size() - 1)) {
 			if (Symbol.isTypePointer(argType)) {
@@ -748,39 +641,12 @@ public class TypeChecker extends algBaseListener{
 		}
 	}
 
-
-
-
-
-	public void enterAlg_funtion_call_args_aux(alg.Alg_funtion_call_args_auxContext ctx) { }
-
-
-
-
-
 	public void exitAlg_funtion_call_args_aux(alg.Alg_funtion_call_args_auxContext ctx) {
 		if(ctx.alg_expression() != null){
 			this.currentCallArgTypes.get(this.currentCallArgTypes.size() - 1).add(0, this.exprType.get(ctx.alg_expression()));
 		}
 	}
 
-
-
-
-
-	public void enterAlg_instruction(alg.Alg_instructionContext ctx) {
-
-	}
-
-
-
-
-
-	public void exitAlg_instruction(alg.Alg_instructionContext ctx) { }
-
-
-
-	public void enterLeave_control_instr(alg.Leave_control_instrContext ctx) { }
 	public void exitLeave_control_instr(alg.Leave_control_instrContext ctx) {
 		ParserRuleContext parent = ctx.getParent().getParent();
 		//in subblock
@@ -796,7 +662,7 @@ public class TypeChecker extends algBaseListener{
 			}
 		}
 	}
-	public void enterRestart_control_instr(alg.Restart_control_instrContext ctx) { }
+
 	public void exitRestart_control_instr(alg.Restart_control_instrContext ctx) {
 		ParserRuleContext parent = ctx.getParent().getParent();
 		//in subblock
@@ -812,7 +678,7 @@ public class TypeChecker extends algBaseListener{
 			}
 		}
 	}
-	public void enterReturn_control_instr(alg.Return_control_instrContext ctx) { }
+
 	public void exitReturn_control_instr(alg.Return_control_instrContext ctx) {
 		String returnVal = ctx.getChild(1).getText();
 		Symbol.PType returnType;
@@ -853,22 +719,6 @@ public class TypeChecker extends algBaseListener{
 		}
 	}
 
-
-
-
-
-
-	public void enterAlg_instruction_controle_next(alg.Alg_instruction_controle_nextContext ctx) { }
-
-
-
-
-
-	public void exitAlg_instruction_controle_next(alg.Alg_instruction_controle_nextContext ctx) { }
-
-
-
-	public void enterLado_esquerdo_ident(alg.Lado_esquerdo_identContext ctx) { }
 	public void exitLado_esquerdo_ident(alg.Lado_esquerdo_identContext ctx) {
 		String variableName = ctx.getChild(0).getText();
 		Symbol s = this.currentScope.resolve(variableName);
@@ -892,7 +742,7 @@ public class TypeChecker extends algBaseListener{
 		}
 		exprType.put(ctx,s.type);
 	}
-	public void enterLado_esquerdo_pointer_index(alg.Lado_esquerdo_pointer_indexContext ctx) { }
+
 	public void exitLado_esquerdo_pointer_index(alg.Lado_esquerdo_pointer_indexContext ctx) {
 		Symbol.PType e1 = exprType.get(ctx.alg_expression(0));
 		Symbol.PType e2 = exprType.get(ctx.alg_expression(1));
@@ -913,16 +763,6 @@ public class TypeChecker extends algBaseListener{
 		exprType.put(ctx, Symbol.getPrimitiveType(e1));
 	}
 
-
-
-
-
-	public void enterAlg_atrib(alg.Alg_atribContext ctx) { }
-
-
-
-
-
 	public void exitAlg_atrib(alg.Alg_atribContext ctx) {
 		if(!Symbol.isTypeConvertibleTo(exprType.get(ctx.alg_expression()), exprType.get(ctx.lado_esquerdo())) &&
 				!Symbol.isTypeError(exprType.get(ctx.lado_esquerdo())) && !Symbol.isTypeError(exprType.get(ctx.alg_expression()))){
@@ -941,34 +781,6 @@ public class TypeChecker extends algBaseListener{
 		}
 		//exprType.put(ctx, exprType.get(ctx.lado_esquerdo()));
 	}
-
-
-
-
-
-	public void enterAlg_instruction_cond(alg.Alg_instruction_condContext ctx) { }
-
-
-
-
-
-	public void exitAlg_instruction_cond(alg.Alg_instruction_condContext ctx) { }
-
-
-
-
-
-	public void enterAlg_instruction_cond_next(alg.Alg_instruction_cond_nextContext ctx) { }
-
-
-
-
-
-	public void exitAlg_instruction_cond_next(alg.Alg_instruction_cond_nextContext ctx) { }
-
-
-
-
 
 	public void enterAlg_cicle(alg.Alg_cicleContext ctx) {
 		this.inCycle = true;
@@ -989,60 +801,5 @@ public class TypeChecker extends algBaseListener{
 	public void enterAlg_cicle_next(alg.Alg_cicle_nextContext ctx) {
 		this.inCycle = false;
 	}
-
-
-
-
-
-	public void exitAlg_cicle_next(alg.Alg_cicle_nextContext ctx) { }
-
-
-
-
-	//TODO: confirmar com o prof se realmente os subblocks nao tem o seu scope
-	public void enterAlg_subblock(alg.Alg_subblockContext ctx) { }
-
-
-
-
-
-	public void exitAlg_subblock(alg.Alg_subblockContext ctx) { }
-
-
-
-
-
-	public void enterAlg_instr_repeat(alg.Alg_instr_repeatContext ctx) { }
-
-
-
-
-
-	public void exitAlg_instr_repeat(alg.Alg_instr_repeatContext ctx) { }
-
-
-
-
-
-
-	public void enterEveryRule(ParserRuleContext ctx) { }
-
-
-
-
-
-	public void exitEveryRule(ParserRuleContext ctx) { }
-
-
-
-
-
-	public void visitTerminal(TerminalNode node) { }
-
-
-
-
-
-	public void visitErrorNode(ErrorNode node) { }
 
 }
