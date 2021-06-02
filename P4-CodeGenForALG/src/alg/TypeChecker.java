@@ -354,7 +354,7 @@ public class TypeChecker extends algBaseListener{
 		}
 
 		if (operator.equals("==") || operator.equals("!=")) {
-			if (Symbol.isTypePrimitive(e1) && Symbol.isTypePrimitive(e2) && e1 != e2) {
+			if (Symbol.isTypePrimitive(e1) && Symbol.isTypePrimitive(e2) && !e1.equals(e2)) {
 				System.err.println("Line: " + ctx.getStart().getLine() + "; Expected equality comparison between two expressions of equal primitive type");
 				this.semanticErrors++;
 				exprType.put(ctx, new Type(false, Type.PType.ERROR));

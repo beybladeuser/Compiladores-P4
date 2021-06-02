@@ -18,6 +18,7 @@ public class Scope {
 
     public Scope(Scope parentScope)
     {
+        //this assumes that the word size is 4
         this.offset = -8;
         this.staticStackSize = 0;
         this.symbols = new HashMap<>();

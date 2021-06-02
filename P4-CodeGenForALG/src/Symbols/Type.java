@@ -22,7 +22,7 @@ public class Type {
         if(from.equals(to)) return true;
         if(from.isPointer())
         {
-            //conversão de null para qq tipo de ponteiro
+            //conversï¿½o de null para qq tipo de ponteiro
             if(from.getPrimitiveType() == Type.PType.VOID && to.isPointer()) return true;
         }
         else
@@ -66,7 +66,11 @@ public class Type {
 
     public Type(boolean isPointer, String type)
     {
+        type = type.toUpperCase(Locale.ROOT);
         this.isPointer = isPointer;
+        if (type.contains("BOOL")){
+            type = "BOOLEAN";
+        }
         this.type = PType.valueOf(type.toUpperCase(Locale.ROOT));
     }
 
