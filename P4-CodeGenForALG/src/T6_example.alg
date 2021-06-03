@@ -30,5 +30,7 @@ int alg(int n, <string> args)
         x = (1+1) ;
     	boas[x] = abrigo;
     }
+
+    x = a1[1];
     return 0;
 }

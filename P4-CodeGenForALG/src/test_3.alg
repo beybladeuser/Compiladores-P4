@@ -18,7 +18,8 @@ int alg(int test, <string> boas) {
 	bool gfdgfddasfdsdsdgfbvvcbvcd = 'boas' != '0 * 2'; ##shouldnt give error
 	bool gfdgfddasfdsdsdgfd = 'boas' == 0 * 2; ##should give error
 	bool gfdgfddasfdsdsdgfdbfd = 'boas' != 0 * 2; ##should give error
-	int gfdgfddasfdsdsdgfdjgh = 'boas' == '0 * 2'; ##shouldnt give error
+	int gfdgfddasfdsdsdgfdjgh = 'boas' == '0 * 2'; ##should give error
+	bool gfdgfddasfdsdsdgfdjghd = 'boas' == '0 * 2'; ##shouldnt give error
 
 
 	bool asdnfdns = p == null; ##shouldnt give error

@@ -27,7 +27,7 @@ int f(int x)
 int alg(int test, <string> boas) {
     int s = 0;
     float x;
-    f(x);
+    f(x); ##should error
     return s;
 }
 
