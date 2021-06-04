@@ -69,9 +69,14 @@ public class TypeChecker extends algBaseListener{
 		return true;
 	}
 
-	@Override public void enterEveryRule(ParserRuleContext ctx) {
-		scopes.put(ctx, currentScope);
+	public void exitEveryRule(ParserRuleContext ctx)
+	{
+		if(this.scopes.get(ctx)==null)
+		{
+			this.scopes.put(ctx,this.currentScope);
+		}
 	}
+	
 	public void enterAlg_file(alg.Alg_fileContext ctx) {
 		this.globalScope = new Scope(null);
 		this.currentScope = this.globalScope;
