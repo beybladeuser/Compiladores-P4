@@ -54,13 +54,14 @@ public class Main {
 
             if (parser.getNumberOfSyntaxErrors() > 0)
             {
-                System.out.println(parser.getNumberOfSyntaxErrors() + " syntactic errors found. Compilation process halted.");
+                System.out.println(parser.getNumberOfSyntaxErrors() + " syntactic errors found.");
             }
             if(listener.semanticErrors > 0)
             {
-                System.out.println(listener.semanticErrors + " semantic errors found. Compilation process halted.");
+                System.out.println(listener.semanticErrors + " semantic errors found.");
             }
             if (listener.semanticErrors > 0 || parser.getNumberOfSyntaxErrors() > 0) {
+                System.out.println("Compilation process halted.");
                 System.exit(1);
             }
 
