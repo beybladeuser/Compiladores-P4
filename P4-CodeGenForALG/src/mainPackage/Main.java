@@ -52,9 +52,15 @@ public class Main {
             TypeChecker listener = new TypeChecker(functionScope.functionScope, functionScope.lines);
             walker.walk(listener, tree);
 
+            if (parser.getNumberOfSyntaxErrors() > 0)
+            {
+                System.out.println(parser.getNumberOfSyntaxErrors() + " syntactic errors found. Compilation process halted.");
+            }
             if(listener.semanticErrors > 0)
             {
                 System.out.println(listener.semanticErrors + " semantic errors found. Compilation process halted.");
+            }
+            if (listener.semanticErrors > 0 || parser.getNumberOfSyntaxErrors() > 0) {
                 System.exit(1);
             }
 
